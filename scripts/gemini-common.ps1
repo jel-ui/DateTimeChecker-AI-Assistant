@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+$script:GeminiUnsavedSecureKey = $null
 
 function Get-GeminiSecretPath {
     $root = Split-Path -Parent $PSScriptRoot
@@ -86,7 +87,59 @@ function Request-GeminiKeyIfMissing {
         throw "GEMINI_API_KEY không được để trống."
     }
 
-    Save-GeminiKey -SecureKey $secureKey
+    $script:GeminiUnsavedSecureKey = $secureKey
+}
+
+function Get-GeminiApiErrorMessage {
+    param(
+        [Parameter(Mandatory = $true)]
+        [Management.Automation.ErrorRecord]$ErrorRecord
+    )
+
+    $details = $ErrorRecord.ErrorDetails.Message
+    if (-not $details -and $ErrorRecord.Exception.Response) {
+        try {
+            $stream = $ErrorRecord.Exception.Response.GetResponseStream()
+            $reader = New-Object IO.StreamReader($stream)
+            try {
+                $details = $reader.ReadToEnd()
+            } finally {
+                $reader.Dispose()
+                $stream.Dispose()
+            }
+        } catch {
+            $details = $null
+        }
+    }
+
+    $apiMessage = $null
+    $apiStatus = $null
+    if ($details) {
+        try {
+            $parsed = $details | ConvertFrom-Json
+            $apiMessage = $parsed.error.message
+            $apiStatus = $parsed.error.status
+        } catch {
+            $apiMessage = $details
+        }
+    }
+
+    if (-not $apiMessage) {
+        $apiMessage = $ErrorRecord.Exception.Message
+    }
+
+    $combined = "$apiStatus $apiMessage"
+    if ($combined -match "API_KEY_INVALID|API key not valid|API key was reported as leaked|PERMISSION_DENIED") {
+        return "$apiMessage`nGemini API key không hợp lệ hoặc đã bị chặn. Chạy reset-gemini-key.bat rồi tạo hoặc nhập key khác từ Google AI Studio."
+    }
+    if ($combined -match "RESOURCE_EXHAUSTED|quota|429") {
+        return "$apiMessage`nGemini API đã hết quota hoặc vượt giới hạn tạm thời. Chờ quota reset hoặc dùng key thuộc project Gemini khác."
+    }
+    if ($combined -match "FAILED_PRECONDITION|free tier is not available") {
+        return "$apiMessage`nGemini free tier không khả dụng cho project hoặc khu vực hiện tại. Kiểm tra key trong Google AI Studio."
+    }
+
+    return "$apiMessage`nNếu lỗi liên quan API key, chạy reset-gemini-key.bat rồi nhập lại key."
 }
 
 function Invoke-GeminiJson {
@@ -144,11 +197,7 @@ function Invoke-GeminiJson {
     try {
         $response = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body $payload
     } catch {
-        $details = $_.ErrorDetails.Message
-        if ($details) {
-            throw "Gemini API error: $details"
-        }
-        throw
+        throw "Gemini API error: $(Get-GeminiApiErrorMessage -ErrorRecord $_)"
     }
 
     $text = $response.candidates[0].content.parts[0].text
@@ -156,7 +205,13 @@ function Invoke-GeminiJson {
         throw "Gemini API không trả về JSON text."
     }
 
-    return $text | ConvertFrom-Json
+    $parsedResponse = $text | ConvertFrom-Json
+    if ($script:GeminiUnsavedSecureKey) {
+        Save-GeminiKey -SecureKey $script:GeminiUnsavedSecureKey
+        $script:GeminiUnsavedSecureKey = $null
+    }
+
+    return $parsedResponse
 }
 
 function ConvertTo-SafeTsvCell {

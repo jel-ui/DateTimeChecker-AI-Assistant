@@ -10,6 +10,8 @@ ai-assistant-chat.bat
 
 Trong lần đầu sử dụng, nhập Gemini API key khi được hỏi. Key được mã hóa bằng tài khoản Windows hiện tại và lưu cục bộ trong `.secrets/gemini-api-key.txt`. File này đã được loại trừ khỏi Git. Những lần mở `ai-assistant-chat.bat` sau không cần nhập lại key trên cùng tài khoản Windows.
 
+Key chỉ được lưu sau khi Gemini xác nhận request đầu tiên thành công. Nếu nhập sai key, hết quota hoặc key bị chặn, cửa sổ chat sẽ hiển thị hướng dẫn xử lý cụ thể.
+
 Để xóa key cũ và nhập key khác, nhấp đúp:
 
 ```text

@@ -62,11 +62,17 @@ Vui lòng giúp tôi testing cái project này để kiếm thử có sai gì kh
 
 API key được mã hóa bằng tài khoản Windows hiện tại và lưu cục bộ trong `.secrets/gemini-api-key.txt`. File `.secrets` đã được loại trừ khỏi Git. Những lần mở `ai-assistant-chat.bat` sau không cần nhập lại key trên cùng tài khoản Windows.
 
-Để xóa key cũ và nhập key khác, nhấp đúp `reset-gemini-key.bat`. Source production không bị sửa trong self-healing demo.
+Key chỉ được lưu sau khi Gemini xác nhận request đầu tiên thành công. Nếu key sai, bị chặn hoặc cần đổi key, nhấp đúp `reset-gemini-key.bat` rồi mở lại chat. Source production không bị sửa trong self-healing demo.
 
 Gemini API có free tier với giới hạn thấp hơn paid tier, phù hợp cho demo học tập. Tạo key tại [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 Xem hướng dẫn trình bày chi tiết tại [AI-ASSISTED-TESTING-DEMO.md](AI-ASSISTED-TESTING-DEMO.md).
+
+### Xử lý lỗi Gemini API
+
+- Máy mới clone project từ GitHub không có `.secrets`, vì API key không bao giờ được push. Mỗi máy cần nhập Gemini API key riêng trong lần chạy đầu.
+- Nếu chat báo key không hợp lệ hoặc key bị chặn, nhấp đúp `reset-gemini-key.bat`, tạo key mới tại Google AI Studio rồi mở chat lại.
+- Nếu chat báo hết quota hoặc vượt giới hạn, chờ quota free tier reset hoặc dùng key thuộc Gemini project khác.
 
 ## Tập dượt không cần API key
 

@@ -1,0 +1,310 @@
+{
+  "info": {
+    "_postman_id": "b2c1fd6f-8e77-4c37-91f0-datetimechecker-api",
+    "name": "DateTimeChecker API Testing",
+    "description": "API testing collection for Date Time Checker based on ProjectIntroduction.docx requirements. This collection tests POST /api/datetime/check without using AI Assistant.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "API01 - Valid date",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"30\",\n  \"month\": \"5\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Date is valid', function () { pm.expect(pm.response.json().valid).to.eql(true); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API02 - Invalid day in April",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"31\",\n  \"month\": \"4\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Date is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API03 - Leap year valid",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"29\",\n  \"month\": \"2\",\n  \"year\": \"2024\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Leap day is valid', function () { pm.expect(pm.response.json().valid).to.eql(true); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API04 - Non-leap year invalid",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"29\",\n  \"month\": \"2\",\n  \"year\": \"2025\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Non-leap day is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API05 - Day below range",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"0\",\n  \"month\": \"5\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Day below range is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API06 - Month above range",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"30\",\n  \"month\": \"13\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Month above range is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API07 - Year below range",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"30\",\n  \"month\": \"5\",\n  \"year\": \"999\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Year below 1000 is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API08 - Year above range",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"30\",\n  \"month\": \"5\",\n  \"year\": \"3001\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Year above 3000 is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API09 - Day is not a number",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"abc\",\n  \"month\": \"5\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Non-number day is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API10 - Month is decimal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"day\": \"30\",\n  \"month\": \"5.5\",\n  \"year\": \"2026\"\n}"
+        },
+        "url": "{{baseUrl}}/api/datetime/check"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response time is under 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+              "pm.test('Decimal month is invalid', function () { pm.expect(pm.response.json().valid).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

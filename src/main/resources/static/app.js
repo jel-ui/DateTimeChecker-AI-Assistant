@@ -1,7 +1,7 @@
 (function startApplication() {
   "use strict";
 
-  const fields = ["day", "month", "year", "hour", "minute", "second"];
+  const fields = ["day", "month", "year"];
   const form = document.querySelector("#dateTimeForm");
   const emptyState = document.querySelector("#emptyState");
   const resultContent = document.querySelector("#resultContent");
@@ -27,10 +27,6 @@
       day: document.querySelector("#day").value,
       month: document.querySelector("#month").value,
       year: document.querySelector("#year").value,
-      hour: document.querySelector("#hour").value,
-      minute: document.querySelector("#minute").value,
-      second: document.querySelector("#second").value,
-      timezoneOffsetMinutes: -new Date().getTimezoneOffset(),
     };
   }
 
@@ -39,9 +35,6 @@
       day: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
-      hour: date.getHours(),
-      minute: date.getMinutes(),
-      second: date.getSeconds(),
     };
     fields.forEach((field) => {
       document.querySelector(`#${field}`).value = values[field];
@@ -59,7 +52,7 @@
   }
 
   function formatDisplay(parts) {
-    return `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year} ${String(parts.hour).padStart(2, "0")}:${String(parts.minute).padStart(2, "0")}:${String(parts.second).padStart(2, "0")}`;
+    return `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year}`;
   }
 
   async function checkDateTime(values) {
@@ -98,7 +91,7 @@
     detailGrid.replaceChildren();
 
     if (!result.valid) {
-      resultTitle.textContent = "Ngày giờ không hợp lệ";
+      resultTitle.textContent = "Ngày không hợp lệ";
       resultMessage.textContent = "Vui lòng kiểm tra lại dữ liệu bên dưới.";
       result.errors.forEach((error) => {
         const item = document.createElement("li");
@@ -110,16 +103,13 @@
     }
 
     const details = result.details;
-    resultTitle.textContent = "Ngày giờ hợp lệ";
-    resultMessage.textContent = `${details.display} là một thời điểm hợp lệ trên thiết bị của bạn.`;
+    resultTitle.textContent = "Ngày hợp lệ";
+    resultMessage.textContent = `${details.display} là một ngày hợp lệ.`;
     errorList.hidden = true;
     [
       ["Thứ trong tuần", details.weekday],
-      ["Thời điểm", details.period],
       ["Năm nhuận", details.leapYear],
       ["Số ngày trong tháng", details.monthDays],
-      ["Múi giờ", details.offset],
-      ["Unix timestamp", details.timestamp],
     ].forEach(([label, value]) => detailGrid.append(makeDetail(label, value)));
     remember(result.parts);
   }
@@ -147,12 +137,10 @@
     history.forEach((parts) => {
       const button = document.createElement("button");
       const dateLabel = document.createElement("strong");
-      const timeLabel = document.createElement("small");
       button.type = "button";
       button.className = "recent-item";
       dateLabel.textContent = `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year}`;
-      timeLabel.textContent = `${String(parts.hour).padStart(2, "0")}:${String(parts.minute).padStart(2, "0")}:${String(parts.second).padStart(2, "0")}`;
-      button.append(dateLabel, timeLabel);
+      button.append(dateLabel);
       button.addEventListener("click", async () => {
         fields.forEach((field) => {
           document.querySelector(`#${field}`).value = parts[field];
@@ -162,10 +150,6 @@
             day: parts.day,
             month: parts.month,
             year: parts.year,
-            hour: parts.hour,
-            minute: parts.minute,
-            second: parts.second,
-            timezoneOffsetMinutes: -new Date().getTimezoneOffset(),
           }));
         } catch (error) {
           renderError(error);
@@ -178,7 +162,6 @@
 
   function updateClock() {
     const now = new Date();
-    document.querySelector("#liveTime").textContent = now.toLocaleTimeString("vi-VN");
     document.querySelector("#liveDate").textContent = now.toLocaleDateString("vi-VN", {
       weekday: "long",
       day: "2-digit",
@@ -238,9 +221,7 @@
   }
 
   document.documentElement.dataset.theme = localStorage.getItem("date-time-checker-theme") || "light";
-  document.querySelector("#timezoneLabel").textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
   setFields(new Date());
   updateClock();
-  setInterval(updateClock, 1000);
   renderHistory();
 })();

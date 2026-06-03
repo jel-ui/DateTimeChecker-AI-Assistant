@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$OfflineSample,
     [switch]$Headless,
     [switch]$AutoClose,
@@ -13,15 +13,6 @@ $jar = Join-Path $root "tools\selenium-server-4.44.0.jar"
 $seleniumClasses = Join-Path $root "out\ai-selenium-classes"
 $serverProcess = $null
 $serverWasStarted = $false
-
-function Test-DateTimeCheckerServer {
-    try {
-        $response = Invoke-WebRequest -UseBasicParsing -Uri "http://localhost:4173/" -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content.Contains("<title>Date Time Checker</title>")
-    } catch {
-        return $false
-    }
-}
 
 function Get-NewJavaTools {
     $compiler = Get-ChildItem -LiteralPath "C:\Program Files\JetBrains" -Recurse -Filter "javac.exe" -ErrorAction SilentlyContinue |
@@ -62,22 +53,17 @@ try {
         "src\selenium\java\com\datetimechecker\AiGeneratedSeleniumDemo.java"
     if ($LASTEXITCODE -ne 0) { throw "Biên dịch AI Selenium runner thất bại." }
 
-    if (-not (Test-DateTimeCheckerServer)) {
-        $serverProcess = Start-Process -FilePath $appTools.Java -ArgumentList "-cp", $AppClasses, "com.datetimechecker.App" `
-            -WorkingDirectory $root -WindowStyle Hidden -PassThru
-        $serverWasStarted = $true
-        for ($attempt = 0; $attempt -lt 40; $attempt++) {
-            if (Test-DateTimeCheckerServer) { break }
-            Start-Sleep -Milliseconds 250
-        }
-    }
-    if (-not (Test-DateTimeCheckerServer)) { throw "Không thể khởi động localhost." }
+    $server = Start-DateTimeCheckerServerForDemo -Java $appTools.Java -Classes $AppClasses -Root $root
+    $serverProcess = $server.Process
+    $serverWasStarted = $server.Started
 
-    $arguments = @("-cp", "tools\selenium-server-4.44.0.jar;out\ai-selenium-classes", "com.datetimechecker.AiGeneratedSeleniumDemo", "--cases", $testCaseTsv)
+    Write-Output "Selenium target: $($server.Url)"
+
+    $arguments = @("-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8", "-Dsun.stderr.encoding=UTF-8", "-Ddatetimechecker.url=$($server.Url)", "-cp", "tools\selenium-server-4.44.0.jar;out\ai-selenium-classes", "com.datetimechecker.AiGeneratedSeleniumDemo", "--cases", $testCaseTsv)
     if ($Headless) { $arguments += "--headless" }
     if ($AutoClose) { $arguments += "--auto-close" }
     & $newTools.Java $arguments
-    return $LASTEXITCODE
+    $global:DateTimeCheckerSeleniumExitCode = $LASTEXITCODE
 } finally {
     if ($serverWasStarted -and $serverProcess -and -not $serverProcess.HasExited) {
         Stop-Process -Id $serverProcess.Id -Force

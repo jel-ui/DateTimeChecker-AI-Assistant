@@ -292,10 +292,6 @@ legend {
   grid-template-columns: 1fr 1fr 1.35fr;
 }
 
-.time-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
-
 label span {
   display: block;
   margin-bottom: 7px;

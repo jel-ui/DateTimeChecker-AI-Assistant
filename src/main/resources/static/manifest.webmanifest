@@ -1,7 +1,7 @@
 {
   "name": "Date Time Checker",
   "short_name": "Time Checker",
-  "description": "Kiểm tra ngày giờ hợp lệ nhanh chóng trên web và điện thoại.",
+  "description": "Kiểm tra ngày tháng năm hợp lệ nhanh chóng trên web và điện thoại.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

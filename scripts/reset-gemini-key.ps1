@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $secretDirectory = Join-Path $root ".secrets"

@@ -1,12 +1,12 @@
 # DateTimeChecker AI Assistant
 
-Ứng dụng Java responsive dùng để kiểm tra ngày giờ hợp lệ trên máy tính và điện thoại. Project tích hợp Gemini AI và Selenium WebDriver để minh họa AI-assisted testing: AI hiểu yêu cầu tự nhiên, sinh dữ liệu kiểm thử và chuyển dữ liệu sang trình duyệt để chạy test trực tiếp.
+Ứng dụng Java responsive dùng để kiểm tra ngày tháng năm hợp lệ trên máy tính và điện thoại. Project tích hợp Gemini AI và Selenium WebDriver để minh họa AI-assisted testing: AI hiểu yêu cầu tự nhiên, sinh dữ liệu kiểm thử và chuyển dữ liệu sang trình duyệt để chạy test trực tiếp.
 
 Project dùng HTTP server có sẵn trong JDK nên không cần tải Maven, Gradle hoặc thư viện ngoài.
 
 ## Tính năng chính
 
-- Kiểm tra ngày, tháng, năm, giờ, phút và giây.
+- Kiểm tra ngày, tháng và năm.
 - Kiểm tra boundary value, số ngày theo tháng và quy tắc năm nhuận.
 - Chạy web responsive trên máy tính và điện thoại trong cùng mạng Wi-Fi.
 - Chat với Gemini AI bằng tiếng Việt để sinh testcase động.
@@ -97,7 +97,7 @@ Selenium demo cần JDK 17 trở lên. Ứng dụng chính vẫn tương thích 
 ## Cấu trúc
 
 - `src/main/java/com/datetimechecker/App.java`: HTTP server và API.
-- `src/main/java/com/datetimechecker/DateTimeValidationService.java`: logic Java kiểm tra ngày giờ.
+- `src/main/java/com/datetimechecker/DateTimeValidationService.java`: logic Java kiểm tra ngày tháng năm.
 - `src/main/resources/static`: giao diện responsive và Progressive Web App.
 - `src/test/java`: test runner Java không cần package ngoài.
 - `scripts`: script tự tìm JDK, biên dịch, chạy ứng dụng và test.

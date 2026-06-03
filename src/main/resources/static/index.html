@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Date Time Checker - kiểm tra ngày giờ hợp lệ nhanh chóng trên web và điện thoại."
+      content="Date Checker - kiểm tra ngày tháng năm hợp lệ nhanh chóng trên web và điện thoại."
     />
     <meta name="theme-color" content="#0f766e" />
     <title>Date Time Checker</title>
@@ -25,7 +25,7 @@
             </svg>
           </span>
           <span>
-            <strong>Date Time</strong>
+            <strong>Date</strong>
             <small>Checker</small>
           </span>
         </a>
@@ -50,14 +50,13 @@
         <section class="hero">
           <div>
             <p class="eyebrow">Kiểm tra chính xác, thao tác nhanh</p>
-            <h1>Ngày giờ của bạn<br /><span>có hợp lệ không?</span></h1>
+            <h1>Ngày của bạn<br /><span>có hợp lệ không?</span></h1>
             <p class="hero-copy">
-              Nhập một thời điểm bất kỳ để kiểm tra và xem các thông tin hữu ích ngay lập tức.
+              Nhập ngày, tháng, năm bất kỳ để kiểm tra và xem các thông tin hữu ích ngay lập tức.
             </p>
           </div>
-          <aside class="live-card" aria-label="Thời gian hiện tại">
-            <span>Thời gian hiện tại</span>
-            <strong id="liveTime">--:--:--</strong>
+          <aside class="live-card" aria-label="Ngày hiện tại">
+            <span>Ngày hiện tại</span>
             <small id="liveDate">Đang tải...</small>
           </aside>
         </section>
@@ -66,14 +65,14 @@
           <article class="card form-card">
             <div class="card-heading">
               <div>
-                <p class="section-kicker">Nhập thời điểm</p>
+                <p class="section-kicker">Nhập ngày tháng năm</p>
                 <h2>Thông tin cần kiểm tra</h2>
               </div>
               <button class="text-button" id="nowButton" type="button">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 8v4l3 2m6-2a9 9 0 1 1-3.35-7M21 3v5h-5" />
+                  <path d="M7 3v3M17 3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
                 </svg>
-                Dùng hiện tại
+                Dùng hôm nay
               </button>
             </div>
 
@@ -92,24 +91,6 @@
                   <label>
                     <span>Năm</span>
                     <input id="year" name="year" type="number" inputmode="numeric" placeholder="YYYY" min="1" max="9999" required />
-                  </label>
-                </div>
-              </fieldset>
-
-              <fieldset>
-                <legend>Giờ phút giây</legend>
-                <div class="input-grid time-grid">
-                  <label>
-                    <span>Giờ</span>
-                    <input id="hour" name="hour" type="number" inputmode="numeric" placeholder="HH" min="0" max="23" required />
-                  </label>
-                  <label>
-                    <span>Phút</span>
-                    <input id="minute" name="minute" type="number" inputmode="numeric" placeholder="MM" min="0" max="59" required />
-                  </label>
-                  <label>
-                    <span>Giây</span>
-                    <input id="second" name="second" type="number" inputmode="numeric" placeholder="SS" min="0" max="59" required />
                   </label>
                 </div>
               </fieldset>
@@ -135,7 +116,7 @@
                 </svg>
               </span>
               <h2>Chờ kiểm tra</h2>
-              <p>Kết quả sẽ xuất hiện ở đây sau khi bạn nhập ngày giờ.</p>
+              <p>Kết quả sẽ xuất hiện ở đây sau khi bạn nhập ngày tháng năm.</p>
             </div>
 
             <div class="result-content" id="resultContent" hidden>
@@ -166,8 +147,8 @@
       </main>
 
       <footer>
-        <span>Date Time Checker</span>
-        <span id="timezoneLabel">Múi giờ thiết bị</span>
+        <span>Date Checker</span>
+        <span>Kiểm tra ngày tháng năm</span>
       </footer>
     </div>
 

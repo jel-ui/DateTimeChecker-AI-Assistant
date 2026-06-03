@@ -1,23 +1,18 @@
-. (Join-Path $PSScriptRoot "common.ps1")
+﻿. (Join-Path $PSScriptRoot "common.ps1")
 
 $root = Split-Path -Parent $PSScriptRoot
 $url = "http://localhost:4173"
 $previousLocation = Get-Location
 
-function Test-DateTimeCheckerServer {
-    try {
-        $response = Invoke-WebRequest -UseBasicParsing -Uri "$url/" -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content.Contains("<title>Date Time Checker</title>")
-    } catch {
-        return $false
-    }
-}
-
-if (Test-DateTimeCheckerServer) {
+if (Test-DateTimeCheckerAppServer -Url $url) {
     Write-Output "Date Time Checker đang chạy tại $url"
     Write-Output "Đang mở lại ứng dụng trên trình duyệt..."
     Start-Process $url
     exit 0
+}
+
+if (-not (Test-TcpPortAvailable -Port 4173)) {
+    throw "Port 4173 đang được dùng bởi server không đúng phiên bản hiện tại. Hãy đóng cửa sổ run.bat cũ rồi chạy lại."
 }
 
 & (Join-Path $PSScriptRoot "build.ps1")

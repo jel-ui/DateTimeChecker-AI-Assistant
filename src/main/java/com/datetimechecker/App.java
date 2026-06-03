@@ -135,20 +135,7 @@ public final class App {
             return new DateTimeValidationService.DateTimeCheckRequest(
                     values.get("day"),
                     values.get("month"),
-                    values.get("year"),
-                    values.get("hour"),
-                    values.get("minute"),
-                    values.get("second"),
-                    parseNullableInteger(values.get("timezoneOffsetMinutes")));
-        }
-
-        private static Integer parseNullableInteger(String value) {
-            if (value == null) return null;
-            try {
-                return Integer.valueOf(value);
-            } catch (NumberFormatException exception) {
-                return null;
-            }
+                    values.get("year"));
         }
 
         private static String unescape(String value) {

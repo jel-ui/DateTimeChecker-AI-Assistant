@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$Headless,
     [switch]$AutoClose
 )
@@ -10,15 +10,6 @@ $jar = Join-Path $root "tools\selenium-server-4.44.0.jar"
 $seleniumClasses = Join-Path $root "out\selenium-classes"
 $serverProcess = $null
 $serverWasStarted = $false
-
-function Test-DateTimeCheckerServer {
-    try {
-        $response = Invoke-WebRequest -UseBasicParsing -Uri "http://localhost:4173/" -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content.Contains("<title>Date Time Checker</title>")
-    } catch {
-        return $false
-    }
-}
 
 function Get-SeleniumJavaTools {
     $candidates = @(
@@ -70,35 +61,20 @@ try {
         throw "Biên dịch Selenium demo thất bại."
     }
 
-    if (-not (Test-DateTimeCheckerServer)) {
-        $serverProcess = Start-Process -FilePath $appTools.Java `
-            -ArgumentList "-cp", "out\classes", "com.datetimechecker.App" `
-            -WorkingDirectory $root `
-            -WindowStyle Hidden `
-            -PassThru
-        $serverWasStarted = $true
-
-        for ($attempt = 0; $attempt -lt 40; $attempt++) {
-            if (Test-DateTimeCheckerServer) {
-                break
-            }
-            Start-Sleep -Milliseconds 250
-        }
-
-        if (-not (Test-DateTimeCheckerServer)) {
-            throw "Không thể khởi động localhost cho Selenium demo."
-        }
-    }
+    $server = Start-DateTimeCheckerServerForDemo -Java $appTools.Java -Classes "out\classes" -Root $root
+    $serverProcess = $server.Process
+    $serverWasStarted = $server.Started
 
     Write-Output ""
     Write-Output "============================================================"
     Write-Output " SELENIUM VISIBLE UI TEST DEMO"
     Write-Output "============================================================"
     Write-Output "Edge sẽ tự mở và thao tác từng testcase."
-    Write-Output "Theo dõi cửa sổ Edge và nhãn testcase ở góc dưới bên phải."
+    Write-Output "Selenium target: $($server.Url)"
+    Write-Output "Theo dõi cửa sổ Edge và popup testcase ở giữa màn hình."
     Write-Output ""
 
-    $arguments = @("-cp", "tools\selenium-server-4.44.0.jar;out\selenium-classes", "com.datetimechecker.SeleniumVisibleDemo")
+    $arguments = @("-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8", "-Dsun.stderr.encoding=UTF-8", "-Ddatetimechecker.url=$($server.Url)", "-cp", "tools\selenium-server-4.44.0.jar;out\selenium-classes", "com.datetimechecker.SeleniumVisibleDemo")
     if ($Headless) {
         $arguments += "--headless"
     }

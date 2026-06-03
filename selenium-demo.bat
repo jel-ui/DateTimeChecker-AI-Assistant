@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 > nul
 title Date Time Checker Java - Selenium Visible Demo
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\selenium-demo.ps1"
 if errorlevel 1 (

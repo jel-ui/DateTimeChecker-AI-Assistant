@@ -82,11 +82,11 @@ selenium-demo.bat
 
 Microsoft Edge sẽ tự mở. Selenium WebDriver sẽ:
 
-1. Bấm `Dùng hiện tại`.
+1. Bấm `Dùng hôm nay`.
 2. Nhập ngày nhuận hợp lệ `29/02/2024`.
 3. Nhập ngày không hợp lệ `29/02/2025`.
 4. Kiểm tra biên tháng `31/04/2026`.
-5. Kiểm tra biên giờ `24:20:10`.
+5. Kiểm tra biên tháng `30/13/2026`.
 6. Hiển thị `PASS` sau từng testcase.
 7. Dừng tại màn hình tổng kết cho đến khi nhấn Enter.
 
@@ -106,10 +106,10 @@ Thử lần lượt:
 
 | Input | Kết quả mong đợi |
 |---|---|
-| `29/02/2024 14:20:10` | Hợp lệ |
-| `29/02/2025 14:20:10` | Không hợp lệ |
-| `31/04/2026 14:20:10` | Không hợp lệ |
-| Bấm `Dùng hiện tại` | Hợp lệ |
+| `29/02/2024` | Hợp lệ |
+| `29/02/2025` | Không hợp lệ |
+| `31/04/2026` | Không hợp lệ |
+| Bấm `Dùng hôm nay` | Hợp lệ |
 
 ## Vai trò của AI và tester
 

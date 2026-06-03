@@ -17,8 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class SeleniumVisibleDemo {
-    private static final String APP_URL = "http://localhost:4173";
-    private static final long STEP_DELAY_MS = 1400;
+    private static final String APP_URL = System.getProperty("datetimechecker.url", "http://localhost:4173");
+    private static final long STEP_DELAY_MS = 1600;
+    private static final long FIELD_DELAY_MS = 700;
+    private static final long RESULT_DELAY_MS = 2000;
 
     private final WebDriver driver;
     private final WebDriverWait wait;
@@ -68,14 +70,13 @@ public final class SeleniumVisibleDemo {
         System.out.println("Opening Edge with Selenium WebDriver...");
         driver.get(APP_URL);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dateTimeForm")));
-        showOverlay("AI-ASSISTED SELENIUM TEST", "Edge is controlled automatically by Selenium WebDriver.", "#0f766e");
-        pause();
+        System.out.println("Edge is controlled automatically by Selenium WebDriver.");
 
-        runCurrentTimeTest();
-        runFormTest("TC02", "Leap year valid", "29", "2", "2024", "14", "20", "10", "Ngày giờ hợp lệ");
-        runFormTest("TC03", "Non-leap year invalid", "29", "2", "2025", "14", "20", "10", "Ngày giờ không hợp lệ");
-        runFormTest("TC04", "Month boundary invalid", "31", "4", "2026", "14", "20", "10", "Ngày giờ không hợp lệ");
-        runFormTest("TC05", "Hour boundary invalid", "30", "5", "2026", "24", "20", "10", "Ngày giờ không hợp lệ");
+        runCurrentDateTest();
+        runFormTest("TC02", "Leap year valid", "29", "2", "2024", "Ngày hợp lệ");
+        runFormTest("TC03", "Non-leap year invalid", "29", "2", "2025", "Ngày không hợp lệ");
+        runFormTest("TC04", "Month boundary invalid", "31", "4", "2026", "Ngày không hợp lệ");
+        runFormTest("TC05", "Month range invalid", "30", "13", "2026", "Ngày không hợp lệ");
 
         String summary = passedTests.size() + "/5 Selenium UI test cases passed."
                 + "<br><br>" + String.join("<br>", passedTests);
@@ -85,12 +86,13 @@ public final class SeleniumVisibleDemo {
         waitBeforeClosing();
     }
 
-    private void runCurrentTimeTest() {
+    private void runCurrentDateTest() {
         String id = "TC01";
-        String name = "Synchronize current time";
-        announce(id, name, "Click the current-time button and validate the result.");
+        String name = "Use today's date";
+        announce(id, name, "Click the today button and validate the result.");
+        System.out.println("  Action: click today button");
         driver.findElement(By.id("nowButton")).click();
-        assertResult(id, name, "Ngày giờ hợp lệ");
+        assertResult(id, name, "Ngày hợp lệ");
     }
 
     private void runFormTest(
@@ -99,18 +101,13 @@ public final class SeleniumVisibleDemo {
             String day,
             String month,
             String year,
-            String hour,
-            String minute,
-            String second,
             String expectedTitle) {
-        announce(id, name, day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + second);
+        announce(id, name, day + "/" + month + "/" + year);
         fill("day", day);
         fill("month", month);
         fill("year", year);
-        fill("hour", hour);
-        fill("minute", minute);
-        fill("second", second);
         pause();
+        System.out.println("  Action: submit form");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
         assertResult(id, name, expectedTitle);
     }
@@ -118,28 +115,40 @@ public final class SeleniumVisibleDemo {
     private void assertResult(String id, String name, String expectedTitle) {
         wait.until(ExpectedConditions.textToBe(By.id("resultTitle"), expectedTitle));
         String actualTitle = driver.findElement(By.id("resultTitle")).getText();
+        String input = currentInput();
+        System.out.println("  Input: " + input);
+        System.out.println("  Expected result: " + expectedTitle);
+        System.out.println("  Actual result: " + actualTitle);
         if (!expectedTitle.equals(actualTitle)) {
             throw new IllegalStateException(id + " expected '" + expectedTitle + "' but received '" + actualTitle + "'.");
         }
 
         String passed = id + " PASS - " + name;
         passedTests.add(passed);
-        showOverlay(passed, "Expected result: " + expectedTitle, "#0f766e");
+        showOverlay(passed, "Input: " + input + "<br>Expected: " + expectedTitle + "<br>Actual: " + actualTitle, "#0f766e");
         System.out.println(passed);
-        pause();
+        pauseForResult();
+        hideOverlay();
     }
 
     private void fill(String id, String value) {
         WebElement field = driver.findElement(By.id(id));
         field.clear();
+        pauseBetweenFields();
         field.sendKeys(value);
+        System.out.println("  Input " + id + " = " + value);
+        pauseBetweenFields();
+    }
+
+    private String currentInput() {
+        return driver.findElement(By.id("day")).getAttribute("value")
+                + "/" + driver.findElement(By.id("month")).getAttribute("value")
+                + "/" + driver.findElement(By.id("year")).getAttribute("value");
     }
 
     private void announce(String id, String name, String input) {
-        showOverlay(id + " - " + name, "Selenium is executing:<br>" + input, "#d97706");
         System.out.println();
         System.out.println(id + " RUNNING - " + name + " - " + input);
-        pause();
     }
 
     private void showOverlay(String title, String message, String color) {
@@ -147,15 +156,22 @@ public final class SeleniumVisibleDemo {
                 "let panel=document.querySelector('#selenium-demo-panel');"
                         + "if(!panel){panel=document.createElement('aside');panel.id='selenium-demo-panel';"
                         + "document.body.append(panel);}"
-                        + "panel.style.cssText='position:fixed;right:18px;bottom:18px;z-index:99999;"
-                        + "max-width:390px;padding:18px 20px;border-radius:16px;color:white;"
-                        + "font:600 14px/1.55 Segoe UI,Arial,sans-serif;box-shadow:0 15px 45px rgba(0,0,0,.25);"
-                        + "background:' + arguments[2] + ';';"
-                        + "panel.innerHTML='<strong style=\"display:block;font-size:16px;margin-bottom:6px\">'"
-                        + "+arguments[0]+'</strong><span>'+arguments[1]+'</span>';",
+                        + "panel.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);"
+                        + "z-index:99999;width:min(620px,calc(100vw - 36px));padding:34px 38px;"
+                        + "border-radius:18px;color:white;text-align:center;font:700 18px/1.55 Segoe UI,Arial,sans-serif;"
+                        + "box-shadow:0 28px 90px rgba(0,0,0,.38);background:' + arguments[2] + ';"
+                        + "outline:9999px solid rgba(0,0,0,.28);';"
+                        + "panel.innerHTML='<strong style=\"display:block;font-size:30px;line-height:1.2;margin-bottom:12px\">'"
+                        + "+arguments[0]+'</strong><span style=\"display:block;font-size:18px;font-weight:650\">'+arguments[1]+'</span>';",
                 title,
                 message,
                 color);
+    }
+
+    private void hideOverlay() {
+        javascript.executeScript(
+                "let panel=document.querySelector('#selenium-demo-panel');"
+                        + "if(panel){panel.remove();}");
     }
 
     private void waitBeforeClosing() {
@@ -173,8 +189,20 @@ public final class SeleniumVisibleDemo {
     }
 
     private static void pause() {
+        sleep(STEP_DELAY_MS);
+    }
+
+    private static void pauseForResult() {
+        sleep(RESULT_DELAY_MS);
+    }
+
+    private static void pauseBetweenFields() {
+        sleep(FIELD_DELAY_MS);
+    }
+
+    private static void sleep(long milliseconds) {
         try {
-            Thread.sleep(STEP_DELAY_MS);
+            Thread.sleep(milliseconds);
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("The Selenium demo was interrupted.", exception);

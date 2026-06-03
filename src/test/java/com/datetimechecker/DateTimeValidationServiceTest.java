@@ -14,7 +14,7 @@ public final class DateTimeValidationServiceTest {
     }
 
     public static void main(String[] args) {
-        run("Accepts a valid date and time", new TestCase() {
+        run("Accepts a valid date", new TestCase() {
             @Override
             public void execute() {
                 assertTrue(validate().valid, "Expected a valid date.");
@@ -24,7 +24,7 @@ public final class DateTimeValidationServiceTest {
         run("Rejects a day that does not exist in the selected month", new TestCase() {
             @Override
             public void execute() {
-                DateTimeCheckResult result = validate("31", "4", "2026", "14", "20", "10");
+                DateTimeCheckResult result = validate("31", "4", "2026");
                 assertTrue(!result.valid, "Expected April 31 to be invalid.");
                 assertTrue(contains(result, "chỉ có 30 ngày"), "Expected a month length error.");
             }
@@ -33,25 +33,25 @@ public final class DateTimeValidationServiceTest {
         run("Accepts February 29 only in a leap year", new TestCase() {
             @Override
             public void execute() {
-                assertTrue(validate("29", "2", "2024", "14", "20", "10").valid, "Expected February 29, 2024 to be valid.");
-                assertTrue(!validate("29", "2", "2025", "14", "20", "10").valid, "Expected February 29, 2025 to be invalid.");
+                assertTrue(validate("29", "2", "2024").valid, "Expected February 29, 2024 to be valid.");
+                assertTrue(!validate("29", "2", "2025").valid, "Expected February 29, 2025 to be invalid.");
             }
         });
 
-        run("Rejects invalid time ranges", new TestCase() {
+        run("Rejects invalid date ranges", new TestCase() {
             @Override
             public void execute() {
-                assertTrue(!validate("30", "5", "2026", "24", "20", "10").valid, "Expected hour 24 to be invalid.");
-                assertTrue(!validate("30", "5", "2026", "14", "60", "10").valid, "Expected minute 60 to be invalid.");
-                assertTrue(!validate("30", "5", "2026", "14", "20", "-1").valid, "Expected second -1 to be invalid.");
+                assertTrue(!validate("0", "5", "2026").valid, "Expected day 0 to be invalid.");
+                assertTrue(!validate("30", "13", "2026").valid, "Expected month 13 to be invalid.");
+                assertTrue(!validate("30", "5", "10000").valid, "Expected year 10000 to be invalid.");
             }
         });
 
         run("Rejects blank and decimal values", new TestCase() {
             @Override
             public void execute() {
-                assertTrue(!validate("", "5", "2026", "14", "20", "10").valid, "Expected a blank day to be invalid.");
-                assertTrue(!validate("30", "5", "2026", "14", "3.5", "10").valid, "Expected a decimal minute to be invalid.");
+                assertTrue(!validate("", "5", "2026").valid, "Expected a blank day to be invalid.");
+                assertTrue(!validate("30", "5.5", "2026").valid, "Expected a decimal month to be invalid.");
             }
         });
 
@@ -59,18 +59,17 @@ public final class DateTimeValidationServiceTest {
             @Override
             public void execute() {
                 DateTimeCheckResult result = validate();
-                assertEquals("30/05/2026 14:20:10", result.details.display, "Expected a formatted date.");
+                assertEquals("30/05/2026", result.details.display, "Expected a formatted date.");
                 assertEquals("Không", result.details.leapYear, "Expected 2026 not to be a leap year.");
                 assertEquals("31", result.details.monthDays, "Expected May to have 31 days.");
-                assertEquals("UTC+07:00", result.details.offset, "Expected the device timezone offset.");
             }
         });
 
         run("Handles century leap-year rules", new TestCase() {
             @Override
             public void execute() {
-                assertTrue(validate("29", "2", "2000", "14", "20", "10").valid, "Expected year 2000 to be a leap year.");
-                assertTrue(!validate("29", "2", "1900", "14", "20", "10").valid, "Expected year 1900 not to be a leap year.");
+                assertTrue(validate("29", "2", "2000").valid, "Expected year 2000 to be a leap year.");
+                assertTrue(!validate("29", "2", "1900").valid, "Expected year 1900 not to be a leap year.");
             }
         });
 
@@ -85,17 +84,14 @@ public final class DateTimeValidationServiceTest {
     }
 
     private static DateTimeCheckResult validate() {
-        return validate("30", "5", "2026", "14", "20", "10");
+        return validate("30", "5", "2026");
     }
 
     private static DateTimeCheckResult validate(
             String day,
             String month,
-            String year,
-            String hour,
-            String minute,
-            String second) {
-        return VALIDATOR.validate(new DateTimeCheckRequest(day, month, year, hour, minute, second, 7 * 60));
+            String year) {
+        return VALIDATOR.validate(new DateTimeCheckRequest(day, month, year));
     }
 
     private static boolean contains(DateTimeCheckResult result, String text) {

@@ -1,4 +1,12 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
+try {
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [Console]::InputEncoding = $utf8NoBom
+    [Console]::OutputEncoding = $utf8NoBom
+    $OutputEncoding = $utf8NoBom
+} catch {
+}
+
 $script:GeminiUnsavedSecureKey = $null
 
 function Get-GeminiSecretPath {

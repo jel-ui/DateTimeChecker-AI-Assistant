@@ -1,4 +1,4 @@
-. (Join-Path $PSScriptRoot "common.ps1")
+﻿. (Join-Path $PSScriptRoot "common.ps1")
 
 $root = Split-Path -Parent $PSScriptRoot
 & (Join-Path $PSScriptRoot "build.ps1")

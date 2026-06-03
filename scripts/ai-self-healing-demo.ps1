@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$OfflineSample,
     [switch]$Headless,
     [switch]$AutoApprove

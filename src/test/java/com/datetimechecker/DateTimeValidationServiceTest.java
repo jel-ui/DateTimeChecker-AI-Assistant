@@ -43,7 +43,8 @@ public final class DateTimeValidationServiceTest {
             public void execute() {
                 assertTrue(!validate("0", "5", "2026").valid, "Expected day 0 to be invalid.");
                 assertTrue(!validate("30", "13", "2026").valid, "Expected month 13 to be invalid.");
-                assertTrue(!validate("30", "5", "10000").valid, "Expected year 10000 to be invalid.");
+                assertTrue(!validate("30", "5", "999").valid, "Expected year 999 to be invalid.");
+                assertTrue(!validate("30", "5", "3001").valid, "Expected year 3001 to be invalid.");
             }
         });
 

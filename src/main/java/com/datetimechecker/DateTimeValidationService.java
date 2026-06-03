@@ -28,11 +28,11 @@ public final class DateTimeValidationService {
             return new DateTimeCheckResult(false, errors, null, null);
         }
 
-        validateRange(year, 1, 9999, "Năm", errors);
+        validateRange(year, 1000, 3000, "Năm", errors);
         validateRange(month, 1, 12, "Tháng", errors);
         validateRange(day, 1, 31, "Ngày", errors);
 
-        if (year >= 1 && year <= 9999 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        if (year >= 1000 && year <= 3000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
             int maximum = Month.of(month).length(java.time.Year.isLeap(year));
             if (day > maximum) {
                 errors.add(String.format(Locale.ROOT, "Tháng %d năm %d chỉ có %d ngày.", month, year, maximum));

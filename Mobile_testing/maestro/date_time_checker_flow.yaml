@@ -1,0 +1,66 @@
+appId: com.datetimechecker.date_time_checker
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "Date"
+- assertVisible: "CHECKER"
+- assertVisible: "Chờ kiểm tra"
+
+- tapOn: "Xóa dữ liệu"
+
+- tapOn:
+    point: "16%,61%"
+- inputText: "30"
+- tapOn:
+    point: "46%,61%"
+- inputText: "5"
+- tapOn:
+    point: "78%,61%"
+- inputText: "2026"
+- hideKeyboard
+- tapOn: "Kiểm tra ngay"
+
+- assertVisible: "Ngày hợp lệ"
+- assertVisible: "30/05/2026 là một ngày hợp lệ."
+- assertVisible: "Thứ bảy"
+- assertVisible: "Không"
+
+- tapOn: "Xóa dữ liệu"
+
+- tapOn:
+    point: "16%,61%"
+- inputText: "29"
+- tapOn:
+    point: "46%,61%"
+- inputText: "2"
+- tapOn:
+    point: "78%,61%"
+- inputText: "2025"
+- hideKeyboard
+- tapOn: "Kiểm tra ngay"
+
+- assertVisible: "Ngày không hợp lệ"
+- assertVisible: "Tháng 2 năm 2025 chỉ có 28 ngày."
+
+- tapOn: "Xóa dữ liệu"
+
+- tapOn:
+    point: "16%,61%"
+- inputText: "29"
+- tapOn:
+    point: "46%,61%"
+- inputText: "2"
+- tapOn:
+    point: "78%,61%"
+- inputText: "2024"
+- hideKeyboard
+- tapOn: "Kiểm tra ngay"
+
+- assertVisible: "Ngày hợp lệ"
+- assertVisible: "29/02/2024 là một ngày hợp lệ."
+- assertVisible: "Có"
+
+- tapOn:
+    point: "95%,10%"
+- assertVisible: "Ngày hợp lệ"
